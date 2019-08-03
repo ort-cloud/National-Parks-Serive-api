@@ -8,13 +8,15 @@ function formatQueryParams() {
 function main() {
   $(`fieldset`).on("click", "#submit", function () {
     event.preventDefault();
-    let  = $('#text-box').val();
-    getUserName();
+    let stateName = $('#text-box').val();
+    let numOfParks = $('#of-parks').val();
+    getParkInfo(stateName, numOfParks);
   });
+  
 }
 
-function getUserName() {
-  const searchUrl = ``;
+function getParkInfo(stateName, numOfParks) {
+  const searchUrl = `https://developer.nps.gov/api/v1/parks?parkCode=&stateCode&limit=${numOfParks}&start=1&q=${stateName}&api_key=WLKboTCTVvJk4NTP6ljXAddPfHaBw5ZPb0IAChen`;
 
   fetch(searchUrl)
     .then(response => {
@@ -30,14 +32,15 @@ function getUserName() {
 
 }
 
-const displayResults = (responseJson) => {
+function displayResults (responseJson) {
   $('.search-results').empty();
-responseJson.forEach((repoObj) => {
+  responseJson.forEach((repoObj) => {
   $('.search-results').append(`
-        <div>${repoObj.name}</div>  
-        <div>${repoObj.html_url}</div>
+        <div>${repoObj.fullName}</div>  
+        <div>${repoObj.description}</div>
+        <div>${repoObj.url}</div>
      `)
-})
+  })
 
 }
 
