@@ -1,10 +1,5 @@
 const apiKey = "";
 
-function formatQueryParams() {
-  const items = Object.keys().map(key => `${key}=${[key]}`)
-  return items.join("&");
-}
-
 function main() {
   $(`fieldset`).on("click", "#submit", function () {
     event.preventDefault();
@@ -16,7 +11,7 @@ function main() {
 }
 
 function getParkInfo(stateName, numOfParks) {
-  const searchUrl = `https://developer.nps.gov/api/v1/parks?parkCode=&stateCode&limit=${numOfParks}&start=1&q=${stateName}&api_key=WLKboTCTVvJk4NTP6ljXAddPfHaBw5ZPb0IAChen`;
+  const searchUrl = `https://developer.nps.gov/api/v1/parks?stateCode=[${stateName}]&limit=${numOfParks}&api_key=WLKboTCTVvJk4NTP6ljXAddPfHaBw5ZPb0IAChen`;
 
   fetch(searchUrl)
     .then(response => {
@@ -25,7 +20,12 @@ function getParkInfo(stateName, numOfParks) {
       }
       throw new Error(response.statusText);
     })
-    .then(responseJson => displayResults(responseJson))
+    .then(responseJson => {
+      if (!responseJson.data.length) {
+        throw new Error('Empty dataset returned');
+      }
+      displayResults(responseJson)
+      })
     .catch(err => {
       $('#js-error-message').text(`Something went wrong: ${err.message}`);
     });
@@ -34,11 +34,11 @@ function getParkInfo(stateName, numOfParks) {
 
 function displayResults (responseJson) {
   $('.search-results').empty();
-  responseJson.forEach((repoObj) => {
+  responseJson.data.forEach((data) => {
   $('.search-results').append(`
-        <div>${repoObj.fullName}</div>  
-        <div>${repoObj.description}</div>
-        <div>${repoObj.url}</div>
+        <div>${data.fullName}</div>  
+        <div>${data.description}</div>
+        <div>${data.url}</div>
      `)
   })
 
